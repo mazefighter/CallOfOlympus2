@@ -24,19 +24,19 @@ public class CardLocationManager : NetworkBehaviour
         switch (originLocation)
         {
             case "Hand":
-                handCards.Add(cardToAdd);
-                deckCards.RemoveAt(originPosition);
+                deckCards.Add(cardToAdd);
+                handCards.RemoveAt(originPosition);
                 break;
             case "Bank":
-                handCards.Add(cardToAdd);
+                deckCards.Add(cardToAdd);
                 bankCards.RemoveAt(originPosition);
                 break;
             case "Discard":
-                handCards.Add(cardToAdd);
+                deckCards.Add(cardToAdd);
                 discardCards.RemoveAt(originPosition);
                 break;
             case "Middle":
-                handCards.Add(cardToAdd);
+                deckCards.Add(cardToAdd);
                 _middleDeck.middleBank.RemoveAt(originPosition);
                 break;
             default:

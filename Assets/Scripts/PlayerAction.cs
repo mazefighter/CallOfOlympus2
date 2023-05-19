@@ -25,29 +25,9 @@ public class PlayerAction : NetworkBehaviour
         {
            DrawFromDeck(1);
         }
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            GetFromMiddleToDeck(1);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            GetFromMiddleToDeck(2);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            GetFromMiddleToDeck(3);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            GetFromMiddleToDeck(4);
-        }
     }
 
-    private void GetFromMiddleToDeck(int selection)
-    {
-        _cardLocationManager.CmdAddToDeck(_middleDeck.middleBank[selection], "Middle", selection);
-    }
+    
     private void DrawFromDeck(int count)
     {
         for (int i = 0; i < count; i++)

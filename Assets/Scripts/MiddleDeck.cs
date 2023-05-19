@@ -17,16 +17,18 @@ public class MiddleDeck : NetworkBehaviour
         {
             middleDeck.Add(DeckCards[i]);
         }
-        dealToMiddleBank();
+
+        for (int i = 0; i < 5; i++)
+        {
+            dealToMiddleBank(i);
+        }
+        
     }
 
-    void dealToMiddleBank()
+    public void dealToMiddleBank(int postition)
     {
-        for (int i = 0; i < 3; i++)
-        {
-            middleBank.Add(middleDeck[0]);
+            middleBank.Insert(postition,middleDeck[0]);
             middleDeck.RemoveAt(0);
-        }
     }
     void Update()
     {

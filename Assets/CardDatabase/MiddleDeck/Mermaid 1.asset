@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7e380278673db5b4da39007458bf659a, type: 3}
-  m_Name: newCard 7
+  m_Name: Mermaid 1
   m_EditorClassIdentifier: 
-  Cardname: 
-  cost: 0
+  Cardname: Mermaid
+  cost: 2
   attack: 0
-  CoinGain: 0
-  god: 0
+  CoinGain: 2
+  god: 2
