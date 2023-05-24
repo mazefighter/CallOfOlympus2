@@ -20,18 +20,14 @@ public class MiddleDeck : NetworkBehaviour
 
         for (int i = 0; i < 5; i++)
         {
-            dealToMiddleBank(i);
+            DealToMiddleBank(i);
         }
         
     }
-
-    public void dealToMiddleBank(int postition)
+    
+    private void DealToMiddleBank(int position)
     {
-            middleBank.Insert(postition,middleDeck[0]);
-            middleDeck.RemoveAt(0);
-    }
-    void Update()
-    {
-        
+        middleBank.Insert(position,middleDeck[0]);
+        middleDeck.RemoveAt(0);
     }
 }

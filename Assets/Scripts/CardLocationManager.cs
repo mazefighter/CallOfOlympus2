@@ -17,10 +17,38 @@ public class CardLocationManager : NetworkBehaviour
        _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
     }
 
+    public void SERVERDrawFromDeckToHand(int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            if (deckCards.Count != 0)
+            {
+                handCards.Add(deckCards[0]);
+                deckCards.RemoveAt(0); 
+            }
+            else
+            {
+                //shuffle discard into deck
+                handCards.Add(deckCards[0]);
+                deckCards.RemoveAt(0); 
+            }
+        }
+    }
+
+    public void SERVERPutCardsIntoDiscardPile()
+    {
+        for (int i = bankCards.Count; i > 0; i--)
+        {
+            discardCards.Add(bankCards[0]);
+            bankCards.RemoveAt(0);
+            
+        }
+    }
 
     [Command]
     public void CmdAddToDeck(Card cardToAdd,string originLocation, int originPosition)
     {
+        _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
         switch (originLocation)
         {
             case "Hand":
@@ -38,6 +66,11 @@ public class CardLocationManager : NetworkBehaviour
             case "Middle":
                 deckCards.Add(cardToAdd);
                 _middleDeck.middleBank.RemoveAt(originPosition);
+                if (_middleDeck.middleDeck.Count != 0)
+                {
+                    _middleDeck.middleBank.Insert(originPosition,_middleDeck.middleDeck[0]);
+                    _middleDeck.middleDeck.RemoveAt(0); 
+                }
                 break;
             default:
                 deckCards.Add(cardToAdd);
@@ -50,11 +83,11 @@ public class CardLocationManager : NetworkBehaviour
     [Command]
     public void CmdAddToHand(Card cardToAdd, string originLocation, int originPosition)
     {
+        _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
         switch (originLocation)
         {
             case "Deck":
-                handCards.Add(cardToAdd);
-                deckCards.RemoveAt(originPosition);
+                SERVERDrawFromDeckToHand(1);
                 break;
             case "Bank":
                 handCards.Add(cardToAdd);
@@ -63,6 +96,15 @@ public class CardLocationManager : NetworkBehaviour
             case "Discard":
                 handCards.Add(cardToAdd);
                 discardCards.RemoveAt(originPosition);
+                break;
+            case "Middle":
+                handCards.Add(cardToAdd);
+                _middleDeck.middleBank.RemoveAt(originPosition);
+                if (_middleDeck.middleDeck.Count != 0)
+                {
+                    _middleDeck.middleBank.Insert(originPosition,_middleDeck.middleDeck[0]);
+                    _middleDeck.middleDeck.RemoveAt(0); 
+                }
                 break;
         }
     }
@@ -71,19 +113,29 @@ public class CardLocationManager : NetworkBehaviour
     [Command]
     public void CmdAddToBank(Card cardToAdd, string originLocation, int originPosition)
     {
+        _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
         switch (originLocation)
         {
             case "Hand":
-                handCards.Add(cardToAdd);
-                deckCards.RemoveAt(originPosition);
+                bankCards.Add(cardToAdd);
+                handCards.RemoveAt(originPosition);
                 break;
             case "Deck":
-                handCards.Add(cardToAdd);
-                bankCards.RemoveAt(originPosition);
+                bankCards.Add(cardToAdd);
+                deckCards.RemoveAt(originPosition);
                 break;
             case "Discard":
-                handCards.Add(cardToAdd);
+                bankCards.Add(cardToAdd);
                 discardCards.RemoveAt(originPosition);
+                break;
+            case "Middle":
+                bankCards.Add(cardToAdd);
+                _middleDeck.middleBank.RemoveAt(originPosition);
+                if (_middleDeck.middleDeck.Count != 0)
+                {
+                    _middleDeck.middleBank.Insert(originPosition,_middleDeck.middleDeck[0]);
+                    _middleDeck.middleDeck.RemoveAt(0); 
+                }
                 break;
         }
     }
@@ -92,21 +144,30 @@ public class CardLocationManager : NetworkBehaviour
     [Command]
     public void CmdAddToDiscard(Card cardToAdd, string originLocation, int originPosition)
     {
+        _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
         switch (originLocation)
         {
             case "Hand":
-                handCards.Add(cardToAdd);
-                deckCards.RemoveAt(originPosition);
+                discardCards.Add(cardToAdd);
+                handCards.RemoveAt(originPosition);
                 break;
             case "Deck":
-                handCards.Add(cardToAdd);
-                bankCards.RemoveAt(originPosition);
+                discardCards.Add(cardToAdd);
+                deckCards.RemoveAt(originPosition);
                 break;
             case "Bank":
-                handCards.Add(cardToAdd);
-                discardCards.RemoveAt(originPosition);
+                discardCards.Add(cardToAdd);
+                bankCards.RemoveAt(originPosition);
+                break;
+            case "Middle":
+                discardCards.Add(cardToAdd);
+                _middleDeck.middleBank.RemoveAt(originPosition);
+                if (_middleDeck.middleDeck.Count != 0)
+                {
+                    _middleDeck.middleBank.Insert(originPosition,_middleDeck.middleDeck[0]);
+                    _middleDeck.middleDeck.RemoveAt(0); 
+                }
                 break;
         }
     }
-    
 }

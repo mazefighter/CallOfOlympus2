@@ -6,20 +6,19 @@ using UnityEngine;
 public class AtackAndGoldSum : NetworkBehaviour
 {
     [SyncVar]
-    public int PlayerAttack;
+    public int playerAttack;
     [SyncVar]
-    public int PlayerGold;
-    void Start()
+    public int playerGold;
+
+    
+    public void SERVERAddGold(int gold)
     {
-        
+        playerGold += gold;
     }
 
-    // Update is called once per frame
-    void Update()
+    
+    public void SERVERAddAttack(int attack)
     {
-        if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            PlayerGold++;
-        }
+        playerAttack += attack;
     }
 }

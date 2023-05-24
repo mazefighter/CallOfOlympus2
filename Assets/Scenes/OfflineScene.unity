@@ -216,8 +216,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 848765246}
-  - component: {fileID: 848765245}
   - component: {fileID: 848765247}
+  - component: {fileID: 848765249}
   - component: {fileID: 848765248}
   m_Layer: 0
   m_Name: NetworkRoom
@@ -226,52 +226,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &848765245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 848765244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 615e6c6589cf9e54cad646b5a11e0529, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dontDestroyOnLoad: 1
-  runInBackground: 1
-  autoStartServerBuild: 1
-  autoConnectClientBuild: 0
-  sendRate: 30
-  offlineScene: Assets/Scenes/OfflineScene.unity
-  onlineScene: Assets/Scenes/RoomScene.unity
-  transport: {fileID: 848765247}
-  networkAddress: localhost
-  maxConnections: 100
-  authenticator: {fileID: 0}
-  playerPrefab: {fileID: 4195896080313026726, guid: 05c466dd798e1954d90f9aa019882200, type: 3}
-  autoCreatePlayer: 1
-  playerSpawnMethod: 1
-  spawnPrefabs: []
-  snapshotSettings:
-    bufferTimeMultiplier: 2
-    catchupNegativeThreshold: -1
-    catchupPositiveThreshold: 1
-    catchupSpeed: 0.019999999552965164
-    slowdownSpeed: 0.03999999910593033
-    driftEmaDuration: 1
-    dynamicAdjustment: 1
-    dynamicAdjustmentTolerance: 1
-    deliveryTimeEmaDuration: 2
-  timeInterpolationGui: 0
-  showRoomGUI: 1
-  minPlayers: 1
-  roomPlayerPrefab: {fileID: -2385371892355875064, guid: 500f5dfdfb5085a40aadcc3eff2bed69, type: 3}
-  RoomScene: Assets/Scenes/RoomScene.unity
-  GameplayScene: Assets/Scenes/CombatScene.unity
-  _allPlayersReady: 0
-  roomSlots: []
-  clientIndex: 0
 --- !u!4 &848765246
 Transform:
   m_ObjectHideFlags: 0
@@ -330,3 +284,49 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetX: 0
   offsetY: 0
+--- !u!114 &848765249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 848765244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e607c076a9413349bcf5919e4ce722f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 1
+  runInBackground: 1
+  autoStartServerBuild: 1
+  autoConnectClientBuild: 0
+  sendRate: 30
+  offlineScene: Assets/Scenes/OfflineScene.unity
+  onlineScene: Assets/Scenes/RoomScene.unity
+  transport: {fileID: 848765247}
+  networkAddress: localhost
+  maxConnections: 100
+  authenticator: {fileID: 0}
+  playerPrefab: {fileID: 4195896080313026726, guid: 05c466dd798e1954d90f9aa019882200, type: 3}
+  autoCreatePlayer: 1
+  playerSpawnMethod: 0
+  spawnPrefabs: []
+  snapshotSettings:
+    bufferTimeMultiplier: 2
+    catchupNegativeThreshold: -1
+    catchupPositiveThreshold: 1
+    catchupSpeed: 0.019999999552965164
+    slowdownSpeed: 0.03999999910593033
+    driftEmaDuration: 1
+    dynamicAdjustment: 1
+    dynamicAdjustmentTolerance: 1
+    deliveryTimeEmaDuration: 2
+  timeInterpolationGui: 0
+  showRoomGUI: 1
+  minPlayers: 1
+  roomPlayerPrefab: {fileID: -2385371892355875064, guid: 500f5dfdfb5085a40aadcc3eff2bed69, type: 3}
+  RoomScene: Assets/Scenes/RoomScene.unity
+  GameplayScene: Assets/Scenes/CombatScene.unity
+  _allPlayersReady: 0
+  roomSlots: []
+  clientIndex: 0
