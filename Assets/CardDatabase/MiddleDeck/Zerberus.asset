@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e380278673db5b4da39007458bf659a, type: 3}
   m_Name: Zerberus
   m_EditorClassIdentifier: 
-  Cardname: Zerberus
+  cardname: Zerberus
   cost: 6
   attack: 10
+  heal: 0
   CoinGain: 0
   god: 3

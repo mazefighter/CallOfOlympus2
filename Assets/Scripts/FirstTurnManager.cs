@@ -7,8 +7,10 @@ public class FirstTurnManager : NetworkBehaviour
 {
     public List<GameObject> players;
     public GameObject[] playerArray = new GameObject[2];
+    private MiddleDeck _middleDeck;
     public void Start()
     {
+        _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
         StartCoroutine(WaitThenChooseFirstPlayer());
     }
 
@@ -22,6 +24,10 @@ public class FirstTurnManager : NetworkBehaviour
             players.Add(player);
         }
 
+        for (int i = 0; i < 5; i++)
+        {
+            _middleDeck.SERVERDealToMiddleBank(i);
+        }
         CardLocationManager ClmFirstPlayer = players[firstTurn].GetComponent<CardLocationManager>();
         CardLocationManager ClmSecondPlayer = players[1-firstTurn].GetComponent<CardLocationManager>();
         ClmSecondPlayer.SERVERShuffleDeck();

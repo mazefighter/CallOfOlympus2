@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e380278673db5b4da39007458bf659a, type: 3}
   m_Name: Human 1
   m_EditorClassIdentifier: 
-  Cardname: Human
+  cardname: Human
   cost: 0
   attack: 0
+  heal: 0
   CoinGain: 1
   god: 0

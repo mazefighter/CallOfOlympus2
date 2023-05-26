@@ -14,6 +14,7 @@ public class TurnSystem : NetworkBehaviour
     public List<NetworkIdentity> networkList;
     private PlayerActionToServer _playerActionToServer;
     private CardLocationManager _cardLocationManager;
+    private AtackAndGoldSum _atackAndGoldSum;
     [SyncVar] public bool isTurn;
     public Button ActionButton;
     public TextMeshProUGUI ActionButtonText;
@@ -22,6 +23,7 @@ public class TurnSystem : NetworkBehaviour
     {
         _playerActionToServer = GetComponent<PlayerActionToServer>();
         _cardLocationManager = gameObject.GetComponent<CardLocationManager>();
+        _atackAndGoldSum = gameObject.GetComponent<AtackAndGoldSum>();
         ActionButton = GameObject.FindGameObjectWithTag("ActionButton").GetComponent<Button>();
         ActionButtonText = GameObject.Find("ActionButtonText").GetComponent<TextMeshProUGUI>();
         ActionButton.onClick.AddListener(ActionButtonClicked);
@@ -76,9 +78,10 @@ public class TurnSystem : NetworkBehaviour
         }
         networkList.Remove(id);
         CardLocationManager cardLocationManager = id.gameObject.GetComponent<CardLocationManager>();
-        AtackAndGoldSum atackAndGoldSum = id.gameObject.GetComponent<AtackAndGoldSum>();
+        AtackAndGoldSum attackAndGoldSum = id.gameObject.GetComponent<AtackAndGoldSum>();
         id.gameObject.GetComponent<TurnSystem>().isTurn = false;
-        atackAndGoldSum.SERVERResetGoldAndAttack();
+        networkList[0].gameObject.GetComponent<AtackAndGoldSum>().SERVERRemoveHealth(attackAndGoldSum.playerAttack);
+        attackAndGoldSum.SERVERResetGoldAndAttack();
         cardLocationManager.SERVERPutBankCardsIntoDiscardPile();
         cardLocationManager.SERVERDrawFromDeckToHand(5);
         networkList[0].gameObject.GetComponent<TurnSystem>().isTurn = true;

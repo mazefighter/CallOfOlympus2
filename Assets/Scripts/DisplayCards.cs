@@ -27,6 +27,7 @@ public class DisplayCards : MonoBehaviour
     private Image _image;
 
     public bool CardBack;
+   [SerializeField] private Image cardBack;
 
 
     private void Awake()
@@ -71,7 +72,7 @@ public class DisplayCards : MonoBehaviour
 
         if (CardBack)
         {
-            _image.sprite = _cardImges[4];
+            cardBack.enabled = true;
         }
     }
 }

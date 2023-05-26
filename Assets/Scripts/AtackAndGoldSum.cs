@@ -10,13 +10,21 @@ public class AtackAndGoldSum : NetworkBehaviour
     [SyncVar]
     public int playerGold;
 
-    
+    [SyncVar] 
+    public int playerHealth = 50;
+
+
+    public void SERVERRemoveHealth(int damage)
+    {
+        playerHealth -= damage;
+    }
     public void SERVERAddGoldAndAttack(int attack, int gold)
     {
         playerGold += gold;
         playerAttack += attack;
         RpcAtackAndGoldChanged(playerAttack, playerGold);
     }
+    
 
     public void SERVERRemoveGoldAndAttack(int attack, int gold)
     {
@@ -38,4 +46,5 @@ public class AtackAndGoldSum : NetworkBehaviour
         PlayerActionOnUser playerActionOnUser = gameObject.GetComponent<PlayerActionOnUser>();
         playerActionOnUser.AttackAndGold(attack, gold);
     }
+    
 }

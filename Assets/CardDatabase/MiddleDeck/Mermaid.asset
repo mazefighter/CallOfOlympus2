@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e380278673db5b4da39007458bf659a, type: 3}
   m_Name: Mermaid
   m_EditorClassIdentifier: 
-  Cardname: Mermaid
+  cardname: Mermaid
   cost: 2
   attack: 0
+  heal: 0
   CoinGain: 2
   god: 2

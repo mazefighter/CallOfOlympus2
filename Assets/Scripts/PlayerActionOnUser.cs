@@ -4,24 +4,32 @@ using System.Collections.Generic;
 using Mirror;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class PlayerActionOnUser : NetworkBehaviour
+public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
 {
     private GameObject _player;
     private GameObject _opponent;
     private CardLocationManager _cardLocationManager;
+    private MiddleDeck _middleDeck;
     private AtackAndGoldSum _attackAndGoldSum;
     private TextMeshProUGUI _deckCount;
     private TextMeshProUGUI _goldSum;
     private TextMeshProUGUI _attackSum;
+    private TextMeshProUGUI _health;
     private GameObject _hand;
     private GameObject _bank;
     private GameObject _discard;
+    private GameObject _discardPile;
+    private Button _watchDiscard;
+    private List<GameObject> middleObjects = new List<GameObject>();
     private List<GameObject> handObjects = new List<GameObject>();
     private List<GameObject> bankObjects = new List<GameObject>();
     private List<GameObject> discardObjects = new List<GameObject>();
+    private List<GameObject> discardPileObjects = new List<GameObject>();
+    private List<GameObject> middleObjectsToPlaceOn = new List<GameObject>();
     [SerializeField] private GameObject cardInstanciate;
     
 
@@ -30,34 +38,80 @@ public class PlayerActionOnUser : NetworkBehaviour
         _goldSum = GameObject.Find("GoldSumText").GetComponent<TextMeshProUGUI>();
         _attackSum = GameObject.Find("AttackSumText").GetComponent<TextMeshProUGUI>();
         _bank = GameObject.Find("Bank");
+        _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
+        
         if (isLocalPlayer)
         {
             _cardLocationManager = gameObject.GetComponent<CardLocationManager>();
             _attackAndGoldSum = gameObject.GetComponent<AtackAndGoldSum>();
+            //wenn nicht jede Karte einzeln geadded wird gibt es im Build probleme
+            middleObjectsToPlaceOn.Add(GameObject.Find("MiddleCard1"));
+            middleObjectsToPlaceOn.Add(GameObject.Find("MiddleCard2"));
+            middleObjectsToPlaceOn.Add(GameObject.Find("MiddleCard3"));
+            middleObjectsToPlaceOn.Add(GameObject.Find("MiddleCard4"));
+            middleObjectsToPlaceOn.Add(GameObject.Find("MiddleCard5"));
+            _middleDeck.middleBank.Callback += OnMiddleUpdate;
             _cardLocationManager.deckCards.Callback += OnDeckUpdate;
-            _cardLocationManager.handCards.Callback += OnHandUpdate;
+            _cardLocationManager.handCards.Callback += OnHandUpdatePlayer;
             _cardLocationManager.bankCards.Callback += OnBankUpdate;
             _cardLocationManager.discardCards.Callback += OnDiscardUpdate;
             _player = GameObject.FindWithTag("PlayerUI");
             _player.transform.SetParent(transform);
             _discard = GameObject.Find("DiscardTopCard");
+            _discardPile = GameObject.Find("DiscardPile");
+            _watchDiscard = _discard.GetComponent<Button>();
+            _watchDiscard.onClick.AddListener(WatchPlayerDiscard);
             _hand = GameObject.Find("Hand");
             _deckCount = GameObject.Find("DeckText").GetComponent<TextMeshProUGUI>();
+            _health = GameObject.Find("HealthText").GetComponent<TextMeshProUGUI>();
+
         }
         else
         {
             _cardLocationManager = gameObject.GetComponent<CardLocationManager>();
             _attackAndGoldSum = gameObject.GetComponent<AtackAndGoldSum>();
             _cardLocationManager.deckCards.Callback += OnDeckUpdate;
-            _cardLocationManager.handCards.Callback += OnHandUpdate;
+            _cardLocationManager.handCards.Callback += OnHandUpdateOpp;
             _cardLocationManager.bankCards.Callback += OnBankUpdate;
             _cardLocationManager.discardCards.Callback += OnDiscardUpdate;
             _opponent = GameObject.FindWithTag("OpponentUI");
             _opponent.transform.SetParent(transform);
             _discard = GameObject.Find("DiscardTopCardOpp");
+            _discardPile = GameObject.Find("DiscardPileOpp");
+            _watchDiscard = _discard.GetComponent<Button>();
+            _watchDiscard.onClick.AddListener(WatchOpponentDiscard);
             _hand = GameObject.Find("HandOpp");
             _deckCount = GameObject.Find("DeckTextOpp").GetComponent<TextMeshProUGUI>();
+            _health = GameObject.Find("HealthTextOpp").GetComponent<TextMeshProUGUI>();
         }
+    }
+    
+    private void OnMiddleUpdate(SyncList<Card>.Operation op, int itemindex, Card olditem, Card newitem)
+    {
+        switch (op)
+        {
+            case SyncList<Card>.Operation.OP_INSERT:
+                GameObject card = Instantiate(cardInstanciate, middleObjectsToPlaceOn[itemindex].transform);
+                DisplayCards displayCards = card.GetComponent<DisplayCards>();
+                displayCards.SetStats(newitem);
+                card.GetComponent<RectTransform>().sizeDelta = new Vector2(225, 350);
+                middleObjects.Insert(itemindex, card);
+                break;
+            case SyncList<Card>.Operation.OP_REMOVEAT:
+                Destroy(middleObjects[itemindex].gameObject);
+                middleObjects.RemoveAt(itemindex);
+                break;
+        }
+    }
+    
+    private void WatchOpponentDiscard()
+    {
+        _discardPile.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+    }
+
+    private void WatchPlayerDiscard()
+    {
+        _discardPile.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
     }
 
     private void OnDiscardUpdate(SyncList<Card>.Operation op, int itemindex, Card olditem, Card newitem)
@@ -70,12 +124,18 @@ public class PlayerActionOnUser : NetworkBehaviour
                 displayCards.SetStats(newitem);
                 card.GetComponent<RectTransform>().sizeDelta = new Vector2(110, 185);
                 discardObjects.Add(card);
+                
+                card = Instantiate(cardInstanciate, _discardPile.transform);
+                displayCards = card.GetComponent<DisplayCards>();
+                displayCards.SetStats(newitem);
+                discardPileObjects.Add(card);
+                
                 break;
             case SyncList<Card>.Operation.OP_REMOVEAT:
-                // index is where it was removed from the list
-                // oldItem is the item that was removed
                 Destroy(discardObjects[itemindex].gameObject);
                 discardObjects.RemoveAt(itemindex);
+                Destroy(discardPileObjects[itemindex].gameObject);
+                discardPileObjects.RemoveAt(itemindex);
                 break;
         }
     }
@@ -99,7 +159,7 @@ public class PlayerActionOnUser : NetworkBehaviour
         }
     }
 
-    private void OnHandUpdate(SyncList<Card>.Operation op, int itemindex, Card olditem, Card newitem)
+    private void OnHandUpdatePlayer(SyncList<Card>.Operation op, int itemindex, Card olditem, Card newitem)
     {
 
         switch (op)
@@ -118,6 +178,26 @@ public class PlayerActionOnUser : NetworkBehaviour
                 break;
         }
     }
+    private void OnHandUpdateOpp(SyncList<Card>.Operation op, int itemindex, Card olditem, Card newitem)
+    {
+
+        switch (op)
+        {
+            case SyncList<Card>.Operation.OP_ADD:
+                GameObject card = Instantiate(cardInstanciate, _hand.transform);
+                DisplayCards displayCards = card.GetComponent<DisplayCards>();
+                displayCards.CardBack = true;
+                displayCards.SetStats(newitem);
+                handObjects.Add(card);
+                break;
+            case SyncList<Card>.Operation.OP_REMOVEAT:
+                // index is where it was removed from the list
+                // oldItem is the item that was removed
+                Destroy(handObjects[itemindex].gameObject);
+                handObjects.RemoveAt(itemindex);
+                break;
+        }
+    }
 
     private void OnDeckUpdate(SyncList<Card>.Operation op, int itemindex, Card olditem, Card newitem)
     {
@@ -131,6 +211,14 @@ public class PlayerActionOnUser : NetworkBehaviour
     }
     void Update()
     {
-        
+        _health.text = _attackAndGoldSum.playerHealth.ToString();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (eventData.pointerCurrentRaycast.gameObject  == GameObject.Find("DiscardPile")||eventData.pointerCurrentRaycast.gameObject == GameObject.Find("DiscardPileOpp"))
+        {
+            eventData.pointerCurrentRaycast.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(2200, 2200);
+        }
     }
 }

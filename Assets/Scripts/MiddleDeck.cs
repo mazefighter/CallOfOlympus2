@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using Random = System.Random;
 
 public class MiddleDeck : NetworkBehaviour
 {
@@ -12,6 +13,7 @@ public class MiddleDeck : NetworkBehaviour
     [SerializeField] private List<Card> DeckCards;
     private CardLocationManager _cardLocation;
     private AtackAndGoldSum _atackAndGoldSum;
+    private Random rndm = new Random();
 
     public override void OnStartServer()
     {
@@ -19,15 +21,12 @@ public class MiddleDeck : NetworkBehaviour
         {
             middleDeck.Add(DeckCards[i]);
         }
-
-        for (int i = 0; i < 5; i++)
+        for (int i = middleDeck.Count; i > 0; i--)
         {
-            DealToMiddleBank(i);
+            int random = rndm.Next(1, middleDeck.Count);
+            (middleDeck[i-1], middleDeck[random]) = (middleDeck[random], middleDeck[i-1]);
         }
-        
     }
-
-    // ReSharper disable Unity.PerformanceAnalysis
     public void SERVERGetFromMiddleToDiscard(int selection, NetworkIdentity id)
     {
         _cardLocation = id.gameObject.GetComponent<CardLocationManager>();
@@ -40,6 +39,7 @@ public class MiddleDeck : NetworkBehaviour
             middleBank.Insert(selection,middleDeck[0]);
             middleDeck.RemoveAt(0);
         }
+
     }
     public void SERVERGetFromMiddleToHand(int selection, NetworkIdentity id)
     {
@@ -50,7 +50,7 @@ public class MiddleDeck : NetworkBehaviour
         middleDeck.RemoveAt(0);
     }
     
-    private void DealToMiddleBank(int position)
+    public void SERVERDealToMiddleBank(int position)
     {
         middleBank.Insert(position,middleDeck[0]);
         middleDeck.RemoveAt(0);
