@@ -11,14 +11,31 @@ public class AtackAndGoldSum : NetworkBehaviour
     public int playerGold;
 
     
-    public void SERVERAddGold(int gold)
+    public void SERVERAddGoldAndAttack(int attack, int gold)
     {
         playerGold += gold;
+        playerAttack += attack;
+        RpcAtackAndGoldChanged(playerAttack, playerGold);
     }
 
-    
-    public void SERVERAddAttack(int attack)
+    public void SERVERRemoveGoldAndAttack(int attack, int gold)
     {
-        playerAttack += attack;
+        playerGold -= gold;
+        playerAttack -= attack;
+        RpcAtackAndGoldChanged(playerAttack, playerGold);
+    }
+
+    public void SERVERResetGoldAndAttack()
+    {
+        playerGold = 0;
+        playerAttack = 0;
+        RpcAtackAndGoldChanged(playerAttack, playerGold);
+    }
+
+    [ClientRpc]
+    private void RpcAtackAndGoldChanged(int attack, int gold)
+    {
+        PlayerActionOnUser playerActionOnUser = gameObject.GetComponent<PlayerActionOnUser>();
+        playerActionOnUser.AttackAndGold(attack, gold);
     }
 }

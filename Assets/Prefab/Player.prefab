@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2103917801535933949}
   - component: {fileID: -9170352707633467681}
   - component: {fileID: -9007022906631199297}
+  - component: {fileID: -4881707289943232379}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -94,8 +95,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  PlayerAttack: 0
-  PlayerGold: 0
+  playerAttack: 0
+  playerGold: 0
 --- !u!114 &-9170352707633467681
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,6 +128,22 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   networkList: []
-  _canvas: {fileID: 0}
-  tmp: {fileID: 0}
   isTurn: 0
+  ActionButton: {fileID: 0}
+  ActionButtonText: {fileID: 0}
+--- !u!114 &-4881707289943232379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4195896080313026726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a329ef9b899f2d449c563b399486409, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  cardInstanciate: {fileID: 797232988925291406, guid: 5317b42ab1c954249a6772dbc2572fba, type: 3}

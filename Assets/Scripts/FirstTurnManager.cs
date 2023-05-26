@@ -21,9 +21,13 @@ public class FirstTurnManager : NetworkBehaviour
         {
             players.Add(player);
         }
-        //shuffle all players decks at start
-        players[1 - firstTurn].GetComponent<CardLocationManager>().SERVERDrawFromDeckToHand(5);
-        players[firstTurn].GetComponent<CardLocationManager>().SERVERDrawFromDeckToHand(3);
+
+        CardLocationManager ClmFirstPlayer = players[firstTurn].GetComponent<CardLocationManager>();
+        CardLocationManager ClmSecondPlayer = players[1-firstTurn].GetComponent<CardLocationManager>();
+        ClmSecondPlayer.SERVERShuffleDeck();
+        ClmFirstPlayer.SERVERShuffleDeck();
+        ClmSecondPlayer.SERVERDrawFromDeckToHand(5);
+        ClmFirstPlayer.SERVERDrawFromDeckToHand(3);
         players[firstTurn].GetComponent<TurnSystem>().isTurn = true;
     }
 }

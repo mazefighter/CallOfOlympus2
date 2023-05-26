@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using Random = System.Random;
 
 public class CardLocationManager : NetworkBehaviour
 {
@@ -11,10 +12,20 @@ public class CardLocationManager : NetworkBehaviour
     public readonly SyncList<Card> bankCards = new SyncList<Card>();
 
     private MiddleDeck _middleDeck;
-
+    private Random rndm = new Random();
+    
     public override void OnStartLocalPlayer()
     {
-       _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
+        
+    }
+
+    public void SERVERShuffleDeck()
+    {
+        for (int i = deckCards.Count; i > 0; i--)
+        {
+            int random = rndm.Next(1, deckCards.Count);
+            (deckCards[i-1], deckCards[random]) = (deckCards[random], deckCards[i-1]);
+        }
     }
 
     public void SERVERDrawFromDeckToHand(int amount)
@@ -28,146 +39,25 @@ public class CardLocationManager : NetworkBehaviour
             }
             else
             {
-                //shuffle discard into deck
+                for (int j = discardCards.Count; j > 0; j--)
+                {
+                    deckCards.Add(discardCards[0]);
+                    discardCards.RemoveAt(0);
+                }
+                SERVERShuffleDeck();
                 handCards.Add(deckCards[0]);
                 deckCards.RemoveAt(0); 
             }
         }
     }
 
-    public void SERVERPutCardsIntoDiscardPile()
+    public void SERVERPutBankCardsIntoDiscardPile()
     {
         for (int i = bankCards.Count; i > 0; i--)
         {
             discardCards.Add(bankCards[0]);
             bankCards.RemoveAt(0);
             
-        }
-    }
-
-    [Command]
-    public void CmdAddToDeck(Card cardToAdd,string originLocation, int originPosition)
-    {
-        _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
-        switch (originLocation)
-        {
-            case "Hand":
-                deckCards.Add(cardToAdd);
-                handCards.RemoveAt(originPosition);
-                break;
-            case "Bank":
-                deckCards.Add(cardToAdd);
-                bankCards.RemoveAt(originPosition);
-                break;
-            case "Discard":
-                deckCards.Add(cardToAdd);
-                discardCards.RemoveAt(originPosition);
-                break;
-            case "Middle":
-                deckCards.Add(cardToAdd);
-                _middleDeck.middleBank.RemoveAt(originPosition);
-                if (_middleDeck.middleDeck.Count != 0)
-                {
-                    _middleDeck.middleBank.Insert(originPosition,_middleDeck.middleDeck[0]);
-                    _middleDeck.middleDeck.RemoveAt(0); 
-                }
-                break;
-            default:
-                deckCards.Add(cardToAdd);
-                break;
-        }
-
-    }
-    
-    
-    [Command]
-    public void CmdAddToHand(Card cardToAdd, string originLocation, int originPosition)
-    {
-        _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
-        switch (originLocation)
-        {
-            case "Deck":
-                SERVERDrawFromDeckToHand(1);
-                break;
-            case "Bank":
-                handCards.Add(cardToAdd);
-                bankCards.RemoveAt(originPosition);
-                break;
-            case "Discard":
-                handCards.Add(cardToAdd);
-                discardCards.RemoveAt(originPosition);
-                break;
-            case "Middle":
-                handCards.Add(cardToAdd);
-                _middleDeck.middleBank.RemoveAt(originPosition);
-                if (_middleDeck.middleDeck.Count != 0)
-                {
-                    _middleDeck.middleBank.Insert(originPosition,_middleDeck.middleDeck[0]);
-                    _middleDeck.middleDeck.RemoveAt(0); 
-                }
-                break;
-        }
-    }
-    
-    
-    [Command]
-    public void CmdAddToBank(Card cardToAdd, string originLocation, int originPosition)
-    {
-        _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
-        switch (originLocation)
-        {
-            case "Hand":
-                bankCards.Add(cardToAdd);
-                handCards.RemoveAt(originPosition);
-                break;
-            case "Deck":
-                bankCards.Add(cardToAdd);
-                deckCards.RemoveAt(originPosition);
-                break;
-            case "Discard":
-                bankCards.Add(cardToAdd);
-                discardCards.RemoveAt(originPosition);
-                break;
-            case "Middle":
-                bankCards.Add(cardToAdd);
-                _middleDeck.middleBank.RemoveAt(originPosition);
-                if (_middleDeck.middleDeck.Count != 0)
-                {
-                    _middleDeck.middleBank.Insert(originPosition,_middleDeck.middleDeck[0]);
-                    _middleDeck.middleDeck.RemoveAt(0); 
-                }
-                break;
-        }
-    }
-    
-    
-    [Command]
-    public void CmdAddToDiscard(Card cardToAdd, string originLocation, int originPosition)
-    {
-        _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
-        switch (originLocation)
-        {
-            case "Hand":
-                discardCards.Add(cardToAdd);
-                handCards.RemoveAt(originPosition);
-                break;
-            case "Deck":
-                discardCards.Add(cardToAdd);
-                deckCards.RemoveAt(originPosition);
-                break;
-            case "Bank":
-                discardCards.Add(cardToAdd);
-                bankCards.RemoveAt(originPosition);
-                break;
-            case "Middle":
-                discardCards.Add(cardToAdd);
-                _middleDeck.middleBank.RemoveAt(originPosition);
-                if (_middleDeck.middleDeck.Count != 0)
-                {
-                    _middleDeck.middleBank.Insert(originPosition,_middleDeck.middleDeck[0]);
-                    _middleDeck.middleDeck.RemoveAt(0); 
-                }
-                break;
         }
     }
 }

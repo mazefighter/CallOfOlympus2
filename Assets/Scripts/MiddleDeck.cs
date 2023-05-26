@@ -10,6 +10,8 @@ public class MiddleDeck : NetworkBehaviour
     public readonly SyncList<Card> middleBank = new SyncList<Card>();
 
     [SerializeField] private List<Card> DeckCards;
+    private CardLocationManager _cardLocation;
+    private AtackAndGoldSum _atackAndGoldSum;
 
     public override void OnStartServer()
     {
@@ -23,6 +25,29 @@ public class MiddleDeck : NetworkBehaviour
             DealToMiddleBank(i);
         }
         
+    }
+
+    // ReSharper disable Unity.PerformanceAnalysis
+    public void SERVERGetFromMiddleToDiscard(int selection, NetworkIdentity id)
+    {
+        _cardLocation = id.gameObject.GetComponent<CardLocationManager>();
+        _atackAndGoldSum = id.gameObject.GetComponent<AtackAndGoldSum>();
+        _cardLocation.discardCards.Add(middleBank[selection]);
+        _atackAndGoldSum.SERVERRemoveGoldAndAttack(0,middleBank[selection].cost);
+        middleBank.RemoveAt(selection);
+        if (middleDeck.Count != 0)
+        {
+            middleBank.Insert(selection,middleDeck[0]);
+            middleDeck.RemoveAt(0);
+        }
+    }
+    public void SERVERGetFromMiddleToHand(int selection, NetworkIdentity id)
+    {
+        _cardLocation = id.gameObject.GetComponent<CardLocationManager>();
+        _cardLocation.handCards.Add(middleBank[selection]);
+        middleBank.RemoveAt(selection);
+        middleBank.Insert(selection,middleDeck[0]);
+        middleDeck.RemoveAt(0);
     }
     
     private void DealToMiddleBank(int position)
