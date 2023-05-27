@@ -14,6 +14,7 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
     private GameObject _opponent;
     private CardLocationManager _cardLocationManager;
     private MiddleDeck _middleDeck;
+    private PlayerActionToServer _playerActionToServer;
     private AtackAndGoldSum _attackAndGoldSum;
     private TextMeshProUGUI _deckCount;
     private TextMeshProUGUI _goldSum;
@@ -42,6 +43,7 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
         
         if (isLocalPlayer)
         {
+            _playerActionToServer = gameObject.GetComponent<PlayerActionToServer>();
             _cardLocationManager = gameObject.GetComponent<CardLocationManager>();
             _attackAndGoldSum = gameObject.GetComponent<AtackAndGoldSum>();
             //wenn nicht jede Karte einzeln geadded wird gibt es im Build probleme
@@ -73,7 +75,7 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
             _cardLocationManager.deckCards.Callback += OnDeckUpdate;
             _cardLocationManager.handCards.Callback += OnHandUpdateOpp;
             _cardLocationManager.bankCards.Callback += OnBankUpdate;
-            _cardLocationManager.discardCards.Callback += OnDiscardUpdate;
+            _cardLocationManager.discardCards.Callback += OnDiscardUpdateOpp;
             _opponent = GameObject.FindWithTag("OpponentUI");
             _opponent.transform.SetParent(transform);
             _discard = GameObject.Find("DiscardTopCardOpp");
@@ -85,7 +87,11 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
             _health = GameObject.Find("HealthTextOpp").GetComponent<TextMeshProUGUI>();
         }
     }
-    
+
+    public void PlayCard(GameObject card)
+    {
+        _playerActionToServer.CmdPlayCard(handObjects.FindInstanceID(card));
+    }
     private void OnMiddleUpdate(SyncList<Card>.Operation op, int itemindex, Card olditem, Card newitem)
     {
         switch (op)
@@ -93,6 +99,9 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
             case SyncList<Card>.Operation.OP_INSERT:
                 GameObject card = Instantiate(cardInstanciate, middleObjectsToPlaceOn[itemindex].transform);
                 DisplayCards displayCards = card.GetComponent<DisplayCards>();
+                CardDrag cardDrag = card.GetComponent<CardDrag>();
+                cardDrag.position = CardDrag.PositionOnField.inMiddle;
+                cardDrag._player = gameObject;
                 displayCards.SetStats(newitem);
                 card.GetComponent<RectTransform>().sizeDelta = new Vector2(225, 350);
                 middleObjects.Insert(itemindex, card);
@@ -121,12 +130,45 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
             case SyncList<Card>.Operation.OP_ADD:
                 GameObject card = Instantiate(cardInstanciate, _discard.transform);
                 DisplayCards displayCards = card.GetComponent<DisplayCards>();
+                CardDrag cardDrag = card.GetComponent<CardDrag>();
+                cardDrag.position = CardDrag.PositionOnField.inDiscard;
                 displayCards.SetStats(newitem);
                 card.GetComponent<RectTransform>().sizeDelta = new Vector2(110, 185);
                 discardObjects.Add(card);
                 
                 card = Instantiate(cardInstanciate, _discardPile.transform);
                 displayCards = card.GetComponent<DisplayCards>();
+                cardDrag = card.GetComponent<CardDrag>();
+                cardDrag.position = CardDrag.PositionOnField.inDiscard;
+                displayCards.SetStats(newitem);
+                discardPileObjects.Add(card);
+                
+                break;
+            case SyncList<Card>.Operation.OP_REMOVEAT:
+                Destroy(discardObjects[itemindex].gameObject);
+                discardObjects.RemoveAt(itemindex);
+                Destroy(discardPileObjects[itemindex].gameObject);
+                discardPileObjects.RemoveAt(itemindex);
+                break;
+        }
+    }
+    private void OnDiscardUpdateOpp(SyncList<Card>.Operation op, int itemindex, Card olditem, Card newitem)
+    {
+        switch (op)
+        {
+            case SyncList<Card>.Operation.OP_ADD:
+                GameObject card = Instantiate(cardInstanciate, _discard.transform);
+                DisplayCards displayCards = card.GetComponent<DisplayCards>();
+                CardDrag cardDrag = card.GetComponent<CardDrag>();
+                cardDrag.position = CardDrag.PositionOnField.inOppDiscard;
+                displayCards.SetStats(newitem);
+                card.GetComponent<RectTransform>().sizeDelta = new Vector2(110, 185);
+                discardObjects.Add(card);
+                
+                card = Instantiate(cardInstanciate, _discardPile.transform);
+                displayCards = card.GetComponent<DisplayCards>();
+                cardDrag = card.GetComponent<CardDrag>();
+                cardDrag.position = CardDrag.PositionOnField.inOppDiscard;
                 displayCards.SetStats(newitem);
                 discardPileObjects.Add(card);
                 
@@ -147,6 +189,8 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
             case SyncList<Card>.Operation.OP_ADD:
                 GameObject card = Instantiate(cardInstanciate, _bank.transform);
                 DisplayCards displayCards = card.GetComponent<DisplayCards>();
+                CardDrag cardDrag = card.GetComponent<CardDrag>();
+                cardDrag.position = CardDrag.PositionOnField.inBank;
                 displayCards.SetStats(newitem);
                 bankObjects.Add(card);
                 break;
@@ -167,6 +211,9 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
             case SyncList<Card>.Operation.OP_ADD:
                GameObject card = Instantiate(cardInstanciate, _hand.transform);
                DisplayCards displayCards = card.GetComponent<DisplayCards>();
+               CardDrag cardDrag = card.GetComponent<CardDrag>();
+               cardDrag.position = CardDrag.PositionOnField.inHand;
+               cardDrag._player = gameObject;
                displayCards.SetStats(newitem);
                handObjects.Add(card);
                 break;
@@ -186,6 +233,8 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
             case SyncList<Card>.Operation.OP_ADD:
                 GameObject card = Instantiate(cardInstanciate, _hand.transform);
                 DisplayCards displayCards = card.GetComponent<DisplayCards>();
+                CardDrag cardDrag = card.GetComponent<CardDrag>();
+                cardDrag.position = CardDrag.PositionOnField.inOppHand;
                 displayCards.CardBack = true;
                 displayCards.SetStats(newitem);
                 handObjects.Add(card);
