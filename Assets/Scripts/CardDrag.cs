@@ -96,9 +96,17 @@ public class CardDrag : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         {
             if (position == PositionOnField.inHand)
             {
-                if (_rectTransform.anchoredPosition.y < -50)
+                if (_rectTransform.anchoredPosition.y is < -575 and > -775)
                 {
                     _player.GetComponent<PlayerActionOnUser>().PlayCard(eventData.pointerDrag);
+                }
+            }
+
+            if (position==PositionOnField.inMiddle)
+            {
+                if (_rectTransform.anchoredPosition.y < -60)
+                {
+                    _player.GetComponent<PlayerActionOnUser>().SelectMiddleCard(eventData.pointerDrag);
                 }
             }
             transform.SetParent(_returnParent);

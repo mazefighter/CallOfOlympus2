@@ -18,6 +18,11 @@ public class AtackAndGoldSum : NetworkBehaviour
     {
         playerHealth -= damage;
     }
+
+    public void SERVERAddHealth(int heal)
+    {
+        playerHealth += heal;
+    }
     public void SERVERAddGoldAndAttack(int attack, int gold)
     {
         playerGold += gold;

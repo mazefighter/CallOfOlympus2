@@ -92,6 +92,10 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
     {
         _playerActionToServer.CmdPlayCard(handObjects.FindInstanceID(card));
     }
+    public void SelectMiddleCard(GameObject card)
+    {
+        _playerActionToServer.CmdChooseMiddleCard(middleObjects.FindInstanceID(card));
+    }
     private void OnMiddleUpdate(SyncList<Card>.Operation op, int itemindex, Card olditem, Card newitem)
     {
         switch (op)

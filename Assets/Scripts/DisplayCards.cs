@@ -14,12 +14,14 @@ public class DisplayCards : MonoBehaviour
     [SerializeField] private int attack;
     [SerializeField] private int coinGain;
     [SerializeField] private int heal;
+    [SerializeField] private string flavourText;
 
     [SerializeField] private TextMeshProUGUI NameText;
     [SerializeField] private TextMeshProUGUI AttackText;
     [SerializeField] private TextMeshProUGUI CostText;
     [SerializeField] private TextMeshProUGUI coinGainText;
     [SerializeField] private TextMeshProUGUI healText;
+    [SerializeField] private TextMeshProUGUI FlavourText;
     [SerializeField] private List<Sprite> _cardImges;
     [SerializeField] private ScriptableObject originObject;
     
@@ -48,11 +50,13 @@ public class DisplayCards : MonoBehaviour
         coinGain = card.CoinGain;
         heal = card.heal;
         cardName = card.cardname;
+        flavourText = card.flavourText;
         NameText.text = cardName;
         AttackText.text = attack.ToString();
         CostText.text = cost.ToString();
         healText.text = heal.ToString();
         coinGainText.text = coinGain.ToString();
+        FlavourText.text = flavourText;
 
         switch (card.god)
         {

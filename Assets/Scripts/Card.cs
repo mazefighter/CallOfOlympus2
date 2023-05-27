@@ -12,7 +12,14 @@ public class Card : ScriptableObject
      public int heal;
      public int CoinGain;
      public God god;
-     
+
+     #region effects
+
+     public string flavourText;
+     public bool drawCard;
+     public int drawAmount;
+
+     #endregion
      
      public enum God
      {

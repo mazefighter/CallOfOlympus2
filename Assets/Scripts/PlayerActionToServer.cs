@@ -40,84 +40,7 @@ public class PlayerActionToServer : NetworkBehaviour
     
     void Update()
     {
-
-        #region ChooseMiddleCard
-
-        //To do: Choose Mechanic drag and drop
-        if (isLocalPlayer)
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1)&& _middleDeck.middleBank.Count > 0)
-            {
-                CmdChooseMiddleCard(0);
-            }
-
-            if (Input.GetKeyDown(KeyCode.Alpha2)&& _middleDeck.middleBank.Count > 1)
-            {
-                CmdChooseMiddleCard(1);
-            }
-
-            if (Input.GetKeyDown(KeyCode.Alpha3)&& _middleDeck.middleBank.Count > 2)
-            {
-                CmdChooseMiddleCard(2);
-            }
-
-            if (Input.GetKeyDown(KeyCode.Alpha4)&& _middleDeck.middleBank.Count > 3)
-            {
-                CmdChooseMiddleCard(3);
-            }
-
-            if (Input.GetKeyDown(KeyCode.Alpha5)&& _middleDeck.middleBank.Count > 4)
-            {
-                CmdChooseMiddleCard(4);
-            }
-        }
-
-        #endregion
-
-        #region ChooseHandCard
-        //To do: Choose Mechanic drag and drop
-        if (isLocalPlayer)
-        {
-            if (Input.GetKeyDown(KeyCode.Keypad1) && _cardLocationManager.handCards.Count > 0)
-            {
-                CmdPlayCard(0);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad2) && _cardLocationManager.handCards.Count > 1)
-            {
-                CmdPlayCard(1);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad3) && _cardLocationManager.handCards.Count > 2)
-            {
-                CmdPlayCard(2);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad4) && _cardLocationManager.handCards.Count > 3)
-            {
-                CmdPlayCard(3);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad5) && _cardLocationManager.handCards.Count > 4)
-            {
-                CmdPlayCard(4);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad6) && _cardLocationManager.handCards.Count > 5)
-            {
-                CmdPlayCard(5);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad7) && _cardLocationManager.handCards.Count > 6)
-            {
-                CmdPlayCard(6);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad8) && _cardLocationManager.handCards.Count > 7)
-            {
-                CmdPlayCard(7);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad9) && _cardLocationManager.handCards.Count > 8)
-            {
-                CmdPlayCard(8);
-            }
-        }
         
-
-        #endregion
     }
 
     
@@ -130,17 +53,19 @@ public class PlayerActionToServer : NetworkBehaviour
         _cardLocationManager.bankCards.Add(selectedCard);
         
         //add cardActions like draw,discardOpponent or destroy DiscardPileCard
-        
+        if (selectedCard.drawCard)
+        {
+            _cardLocationManager.SERVERDrawFromDeckToHand(selectedCard.drawAmount);
+        }
         _atackAndGoldSum.SERVERAddGoldAndAttack(selectedCard.attack,selectedCard.CoinGain);
-
+        _atackAndGoldSum.SERVERAddHealth(selectedCard.heal);
 
         _cardLocationManager.handCards.Remove(selectedCard);
         
     }
     [Command]
-    private void CmdChooseMiddleCard(int btn)
+    public void CmdChooseMiddleCard(int btn)
     {
-        if (_middleDeck.middleBank[btn].cost > _atackAndGoldSum.playerGold) return;
         _middleDeck.SERVERGetFromMiddleToDiscard(btn, gameObject.GetComponent<NetworkIdentity>());
     }
     [Command]
