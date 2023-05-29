@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7e380278673db5b4da39007458bf659a, type: 3}
-  m_Name: Zerberus
+  m_Name: Dolphin 2
   m_EditorClassIdentifier: 
-  cardname: Zerberus
-  cost: 6
-  attack: 7
-  heal: 0
+  cardname: Dolphin
+  cost: 5
+  attack: 3
+  heal: 2
   CoinGain: 0
-  god: 3
-  flavourText: 
-  drawCard: 0
-  drawAmount: 0
+  god: 2
+  flavourText: Draw a card
+  drawCard: 1
+  drawAmount: 1
   scrapDeck: 0
   scrapHand: 0
   scrapDeckAndHand: 0

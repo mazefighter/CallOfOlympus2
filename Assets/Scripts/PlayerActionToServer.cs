@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class PlayerActionToServer : NetworkBehaviour
 {
     private CardLocationManager _cardLocationManager;
-    [SerializeField] private List<Card> testCards;
+    public List<Card> testCards;
     private MiddleDeck _middleDeck;
     private TurnSystem _turnSystem;
     private AtackAndGoldSum _atackAndGoldSum;
@@ -19,10 +19,6 @@ public class PlayerActionToServer : NetworkBehaviour
         _middleDeck = GameObject.Find("MiddleDeck").GetComponent<MiddleDeck>();
         _atackAndGoldSum = gameObject.GetComponent<AtackAndGoldSum>();
         _turnSystem = gameObject.GetComponent<TurnSystem>();
-        for (int i = 0; i < testCards.Count; i++)
-        {
-            CmdAddToDeck(testCards[i]);
-        }
     }
     
     public override void OnStartServer()

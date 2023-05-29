@@ -24,7 +24,8 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
     private GameObject _bank;
     private GameObject _discard;
     private GameObject _discardPile;
-    private Button _watchDiscard;
+    private Button _watchDeck;
+    private GameObject _deckPile;
     private GameObject _scrapCanvas;
     private Button _scrapBtn;
     private TextMeshProUGUI _scrapBtnText;
@@ -36,6 +37,7 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
     private List<GameObject> discardObjects = new List<GameObject>();
     private List<GameObject> discardPileObjects = new List<GameObject>();
     private List<GameObject> middleObjectsToPlaceOn = new List<GameObject>();
+    private List<GameObject> deckObjects = new List<GameObject>();
     [SerializeField] private GameObject cardInstanciate;
     private GameObject CardToPlay;
     
@@ -57,6 +59,7 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
         
         if (isLocalPlayer)
         {
+            
             _playerActionToServer = gameObject.GetComponent<PlayerActionToServer>();
             _cardLocationManager = gameObject.GetComponent<CardLocationManager>();
             _attackAndGoldSum = gameObject.GetComponent<AtackAndGoldSum>();
@@ -75,6 +78,9 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
             _player.transform.SetParent(transform);
             _discard = GameObject.Find("DiscardTopCard");
             _discardPile = GameObject.Find("DiscardPile");
+            _deckPile = GameObject.Find("DeckPile");
+            _watchDeck = GameObject.Find("Deck").GetComponent<Button>();
+            _watchDeck.onClick.AddListener(WatchDeck);
             _hand = GameObject.Find("Hand");
             _deckCount = GameObject.Find("DeckText").GetComponent<TextMeshProUGUI>();
             _health = GameObject.Find("HealthText").GetComponent<TextMeshProUGUI>();
@@ -84,13 +90,18 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
             _scrapBtnText = _scrapBtn.GetComponentInChildren<TextMeshProUGUI>();
             WinCanvas = GameObject.Find("WinCanvas");
             LoseCanvas = GameObject.Find("LoseCanvas");
+            
+            for (int i = 0; i < _playerActionToServer.testCards.Count; i++)
+            {
+                _playerActionToServer.CmdAddToDeck(_playerActionToServer.testCards[i]);
+            }
 
         }
         else
         {
             _cardLocationManager = gameObject.GetComponent<CardLocationManager>();
             _attackAndGoldSum = gameObject.GetComponent<AtackAndGoldSum>();
-            _cardLocationManager.deckCards.Callback += OnDeckUpdate;
+            _cardLocationManager.deckCards.Callback += OnDeckUpdateOpp;
             _cardLocationManager.handCards.Callback += OnHandUpdateOpp;
             _cardLocationManager.bankCards.Callback += OnBankUpdate;
             _cardLocationManager.discardCards.Callback += OnDiscardUpdateOpp;
@@ -98,12 +109,25 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
             _opponent.transform.SetParent(transform);
             _discard = GameObject.Find("DiscardTopCardOpp");
             _discardPile = GameObject.Find("DiscardPileOpp");
+            _deckPile = GameObject.Find("DeckPileOpp");
+            _watchDeck = GameObject.Find("DeckOpp").GetComponent<Button>();
+            _watchDeck.onClick.AddListener(WatchDeckOpp);
             _hand = GameObject.Find("HandOpp");
             _deckCount = GameObject.Find("DeckTextOpp").GetComponent<TextMeshProUGUI>();
             _health = GameObject.Find("HealthTextOpp").GetComponent<TextMeshProUGUI>();
             WinCanvas = GameObject.Find("WinCanvas");
             LoseCanvas = GameObject.Find("LoseCanvas");
         }
+    }
+
+    private void WatchDeckOpp()
+    {
+        _deckPile.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+    }
+
+    private void WatchDeck()
+    {
+        _deckPile.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
     }
 
     public void PlayCard(GameObject card)
@@ -135,6 +159,7 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
                 break;
         }
     }
+    
     
     public void WatchDiscard()
     {
@@ -271,7 +296,48 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
 
     private void OnDeckUpdate(SyncList<Card>.Operation op, int itemindex, Card olditem, Card newitem)
     {
-       _deckCount.text = _cardLocationManager.deckCards.Count.ToString();
+        _deckCount.text = _cardLocationManager.deckCards.Count.ToString();
+        switch (op)
+        {
+            case SyncList<Card>.Operation.OP_ADD:
+                GameObject card = Instantiate(cardInstanciate, _deckPile.transform);
+                DisplayCards displayCards = card.GetComponent<DisplayCards>();
+                CardInteraction cardInteraction = card.GetComponent<CardInteraction>();
+                cardInteraction.position = CardInteraction.PositionOnField.inDeck;
+                cardInteraction._player = gameObject;
+                displayCards.SetStats(newitem);
+                card.GetComponent<RectTransform>().sizeDelta = new Vector2(110, 185);
+                deckObjects.Add(card);
+                break;
+            case SyncList<Card>.Operation.OP_REMOVEAT:
+                Destroy(deckObjects[itemindex].gameObject);
+                deckObjects.RemoveAt(itemindex);
+                break;
+        }
+    }
+    private void OnDeckUpdateOpp(SyncList<Card>.Operation op, int itemindex, Card olditem, Card newitem)
+    {
+        _deckCount.text = _cardLocationManager.deckCards.Count.ToString();
+        switch (op)
+        {
+            case SyncList<Card>.Operation.OP_ADD:
+                GameObject card = Instantiate(cardInstanciate, _deckPile.transform);
+                DisplayCards displayCards = card.GetComponent<DisplayCards>();
+                CardInteraction cardInteraction = card.GetComponent<CardInteraction>();
+                cardInteraction.position = CardInteraction.PositionOnField.inDeck;
+                cardInteraction._player = gameObject;
+                displayCards.SetStats(newitem);
+                card.GetComponent<RectTransform>().sizeDelta = new Vector2(110, 185);
+                deckObjects.Add(card);
+                break;
+            case SyncList<Card>.Operation.OP_CLEAR:
+                for (int i = 0; i < deckObjects.Count; i++)
+                {
+                    Destroy(deckObjects[i].gameObject);
+                    deckObjects.RemoveAt(i);
+                }
+                break;
+        }
     }
 
     public void AttackAndGold(int attack, int gold)
@@ -372,6 +438,10 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
     public void OnPointerDown(PointerEventData eventData)
     {
         if (eventData.pointerCurrentRaycast.gameObject  == GameObject.Find("DiscardPile")||eventData.pointerCurrentRaycast.gameObject == GameObject.Find("DiscardPileOpp"))
+        {
+            eventData.pointerCurrentRaycast.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(2200, 2200);
+        }
+        if (eventData.pointerCurrentRaycast.gameObject  == GameObject.Find("DeckPile")||eventData.pointerCurrentRaycast.gameObject == GameObject.Find("DeckPileOpp"))
         {
             eventData.pointerCurrentRaycast.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector2(2200, 2200);
         }

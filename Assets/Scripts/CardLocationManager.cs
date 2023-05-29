@@ -39,6 +39,7 @@ public class CardLocationManager : NetworkBehaviour
             }
             else
             {
+                deckCards.Clear();
                 for (int j = discardCards.Count; j > 0; j--)
                 {
                     deckCards.Add(discardCards[0]);

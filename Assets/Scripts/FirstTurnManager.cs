@@ -16,7 +16,7 @@ public class FirstTurnManager : NetworkBehaviour
 
     IEnumerator WaitThenChooseFirstPlayer()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         int firstTurn = Random.Range(0, 2);
         playerArray = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject player in playerArray)
