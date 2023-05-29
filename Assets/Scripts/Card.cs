@@ -19,6 +19,11 @@ public class Card : ScriptableObject
      public bool drawCard;
      public int drawAmount;
 
+     public bool scrapDeck;
+     public bool scrapHand;
+     public bool scrapDeckAndHand;
+     public int scrapAmount;
+
      #endregion
      
      public enum God
@@ -26,7 +31,8 @@ public class Card : ScriptableObject
           none,
           Zeus,
           Poseidon,
-          Hades
+          Hades,
+          Ares
      }
 
      

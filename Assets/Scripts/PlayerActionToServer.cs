@@ -63,6 +63,35 @@ public class PlayerActionToServer : NetworkBehaviour
         _cardLocationManager.handCards.Remove(selectedCard);
         
     }
+
+    [Command]
+    public void CmdPlayScrapCard(int selection, int scrapplace, int scrapPosition, bool scrapNothing)
+    {
+        Card selectedCard = _cardLocationManager.handCards[selection];
+        _cardLocationManager.bankCards.Add(selectedCard);
+        if (!scrapNothing)
+        {
+            if (scrapplace == 1)
+            {
+                _cardLocationManager.handCards.RemoveAt(scrapPosition);
+            }
+
+            if (scrapplace == 2)
+            {
+                _cardLocationManager.discardCards.RemoveAt(scrapPosition);
+            }
+        }
+        
+        //add cardActions like draw,discardOpponent or destroy DiscardPileCard
+        if (selectedCard.drawCard)
+        {
+            _cardLocationManager.SERVERDrawFromDeckToHand(selectedCard.drawAmount);
+        }
+        _atackAndGoldSum.SERVERAddGoldAndAttack(selectedCard.attack,selectedCard.CoinGain);
+        _atackAndGoldSum.SERVERAddHealth(selectedCard.heal);
+
+        _cardLocationManager.handCards.Remove(selectedCard);
+    }
     [Command]
     public void CmdChooseMiddleCard(int btn)
     {

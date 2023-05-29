@@ -23,7 +23,7 @@ public class DisplayCards : MonoBehaviour
     [SerializeField] private TextMeshProUGUI healText;
     [SerializeField] private TextMeshProUGUI FlavourText;
     [SerializeField] private List<Sprite> _cardImges;
-    [SerializeField] private ScriptableObject originObject;
+    [SerializeField] public Card originObject;
     
 
     private Image _image;
@@ -71,6 +71,9 @@ public class DisplayCards : MonoBehaviour
                 break;
             case Card.God.Poseidon:
                 _image.sprite = _cardImges[3];
+                break;
+            case Card.God.Ares:
+                _image.sprite = _cardImges[4];
                 break;
         }
 

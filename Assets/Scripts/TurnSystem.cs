@@ -1,13 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Mirror;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 public class TurnSystem : NetworkBehaviour
 {
@@ -18,6 +15,8 @@ public class TurnSystem : NetworkBehaviour
     [SyncVar] public bool isTurn;
     public Button ActionButton;
     public TextMeshProUGUI ActionButtonText;
+
+    private bool playScrapCardHandFirst;
 
     public override void OnStartLocalPlayer()
     {
@@ -33,9 +32,24 @@ public class TurnSystem : NetworkBehaviour
     {
         if (_cardLocationManager.handCards.Count != 0)
         {
-            for (int i = _cardLocationManager.handCards.Count; i > 0; i--)
+            playScrapCardHandFirst = false;
+            foreach (Card card in _cardLocationManager.handCards)
             {
-               _playerActionToServer.CmdPlayCard(0);
+                if (card.scrapDeckAndHand || card.scrapHand)
+                {
+                    playScrapCardHandFirst = true;
+                }
+            }
+
+            if (!playScrapCardHandFirst)
+            {
+                for (int i = _cardLocationManager.handCards.Count; i > 0; i--)
+                {
+                    if (!_cardLocationManager.handCards[i - 1].scrapDeck)
+                    {
+                        _playerActionToServer.CmdPlayCard(i-1);
+                    }
+                }
             }
         }
         else
