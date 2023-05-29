@@ -38,6 +38,9 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
     private List<GameObject> middleObjectsToPlaceOn = new List<GameObject>();
     [SerializeField] private GameObject cardInstanciate;
     private GameObject CardToPlay;
+    
+    private GameObject WinCanvas;
+    private GameObject LoseCanvas;
 
     public bool isScrappingDiscard;
     public bool isScrappingHand;
@@ -79,6 +82,8 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
             _scrapInfo = _scrapCanvas.GetComponentInChildren<TextMeshProUGUI>();
             _scrapBtn = _scrapCanvas.GetComponentInChildren<Button>();
             _scrapBtnText = _scrapBtn.GetComponentInChildren<TextMeshProUGUI>();
+            WinCanvas = GameObject.Find("WinCanvas");
+            LoseCanvas = GameObject.Find("LoseCanvas");
 
         }
         else
@@ -96,6 +101,8 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
             _hand = GameObject.Find("HandOpp");
             _deckCount = GameObject.Find("DeckTextOpp").GetComponent<TextMeshProUGUI>();
             _health = GameObject.Find("HealthTextOpp").GetComponent<TextMeshProUGUI>();
+            WinCanvas = GameObject.Find("WinCanvas");
+            LoseCanvas = GameObject.Find("LoseCanvas");
         }
     }
 
@@ -275,7 +282,22 @@ public class PlayerActionOnUser : NetworkBehaviour, IPointerDownHandler
     void Update()
     {
         _health.text = _attackAndGoldSum.playerHealth.ToString();
-        if (CardToScrap != null)
+
+        if (isLocalPlayer)
+        {
+            if (_attackAndGoldSum.playerHealth <= 0)
+            {
+                LoseCanvas.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            }
+        }
+        else
+        {
+            if (_attackAndGoldSum.playerHealth <= 0)
+            {
+                WinCanvas.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            }
+        }
+            if (CardToScrap != null)
         {
             _scrapBtnText.text = CardToScrap.GetComponent<DisplayCards>().originObject.cardname; 
         }

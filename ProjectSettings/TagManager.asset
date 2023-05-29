@@ -8,6 +8,7 @@ TagManager:
   - PlayerUI
   - OpponentUI
   - MiddleCards
+  - RoomPlayer
   layers:
   - Default
   - TransparentFX

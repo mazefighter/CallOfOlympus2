@@ -15,6 +15,13 @@ MonoBehaviour:
   cardname: Mermaid
   cost: 2
   attack: 0
-  heal: 0
+  heal: 2
   CoinGain: 2
   god: 2
+  flavourText: 
+  drawCard: 0
+  drawAmount: 0
+  scrapDeck: 0
+  scrapHand: 0
+  scrapDeckAndHand: 0
+  scrapAmount: 0

@@ -18,6 +18,7 @@ public class TurnSystem : NetworkBehaviour
 
     private bool playScrapCardHandFirst;
 
+    private GameObject[] RoomPlayer = new GameObject[2];
     public override void OnStartLocalPlayer()
     {
         _playerActionToServer = GetComponent<PlayerActionToServer>();
@@ -95,11 +96,27 @@ public class TurnSystem : NetworkBehaviour
         AtackAndGoldSum attackAndGoldSum = id.gameObject.GetComponent<AtackAndGoldSum>();
         id.gameObject.GetComponent<TurnSystem>().isTurn = false;
         networkList[0].gameObject.GetComponent<AtackAndGoldSum>().SERVERRemoveHealth(attackAndGoldSum.playerAttack);
+        if (networkList[0].gameObject.GetComponent<AtackAndGoldSum>().playerHealth <= 0)
+        {
+            StartCoroutine(EndGame());
+        }
         attackAndGoldSum.SERVERResetGoldAndAttack();
         cardLocationManager.SERVERPutBankCardsIntoDiscardPile();
         cardLocationManager.SERVERDrawFromDeckToHand(5);
         networkList[0].gameObject.GetComponent<TurnSystem>().isTurn = true;
         networkList.Clear();
         
+    }
+
+    IEnumerator EndGame()
+    {
+        yield return new WaitForSeconds(3);
+        NetworkRoomManager networkRoomManager = GameObject.Find("NetworkRoom").GetComponent<NetworkRoomManager>();
+        RoomPlayer = GameObject.FindGameObjectsWithTag("RoomPlayer");
+        for (int i = 0; i < RoomPlayer.Length; i++)
+        {
+            Destroy(RoomPlayer[i]);
+        }
+        networkRoomManager.ServerChangeScene("RoomScene");
     }
 }
